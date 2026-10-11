@@ -7,9 +7,12 @@
 
     <key>ProgramArguments</key>
     <array>
-        <!-- Replace with your checkout path if different. -->
-        <string>/Users/kriakiku/Developer/speakr-asr-wrapper/.build/release/SpeakrASRWrapper</string>
+        <!-- Filled in by Scripts/manage.sh at install time. -->
+        <string>__BINARY_PATH__</string>
     </array>
+
+    <key>WorkingDirectory</key>
+    <string>__REPO_DIR__</string>
 
     <key>EnvironmentVariables</key>
     <dict>
@@ -27,8 +30,8 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/tmp/speakr-asr-wrapper.log</string>
+    <string>__REPO_DIR__/logs/service.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/speakr-asr-wrapper.err.log</string>
+    <string>__REPO_DIR__/logs/service.err.log</string>
 </dict>
 </plist>

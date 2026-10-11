@@ -41,6 +41,8 @@ ignored (Parakeet auto-detects language; there's only one loaded model).
 
 ## Build & run
 
+Quickest manual way:
+
 ```sh
 swift build -c release
 PORT=9099 .build/release/SpeakrASRWrapper
@@ -56,6 +58,10 @@ they're cached locally afterwards. Env vars:
   (FluidAudio's own recommended successor to v3: same speed and languages,
   better accuracy — consider switching)
 
+For running this as a real persistent service instead, see
+[Running persistently](#running-persistently-launchd) below — that's the
+intended way to run it day to day.
+
 ## Wiring into Speakr
 
 ```
@@ -68,17 +74,27 @@ setting/request says otherwise.
 
 ## Running persistently (launchd)
 
+`Scripts/manage.sh` builds, (re)installs, updates, and manages this as a
+per-user launchd agent — no manual plist editing needed, it fills in the
+checkout path itself.
+
 ```sh
-swift build -c release
-cp Scripts/com.kriakiku.speakr-asr-wrapper.plist ~/Library/LaunchAgents/
-# edit the ProgramArguments path inside if your checkout isn't at
-# ~/Developer/speakr-asr-wrapper
-launchctl load ~/Library/LaunchAgents/com.kriakiku.speakr-asr-wrapper.plist
+./Scripts/manage.sh install     # build + load as a launchd agent (RunAtLoad + KeepAlive)
+./Scripts/manage.sh status      # launchd state + a live GET /health check
+./Scripts/manage.sh update      # git pull, rebuild, hot-swap the running service
+./Scripts/manage.sh restart
+./Scripts/manage.sh stop
+./Scripts/manage.sh start
+./Scripts/manage.sh logs        # tails logs/service.log + .err.log
+./Scripts/manage.sh uninstall   # bootout + remove the plist (leaves the binary/logs)
 ```
 
-Logs land in `/tmp/speakr-asr-wrapper.log` / `.err.log`. `KeepAlive` restarts
-it if it crashes; it does *not* survive the Mac being asleep or powered off —
-Speakr's ASR calls will just fail until the Mac is back up.
+Logs land in `logs/service.log` / `logs/service.err.log` inside the checkout
+(gitignored). `KeepAlive` restarts the process if it crashes; none of this
+survives the Mac being asleep or powered off — Speakr's ASR calls will just
+fail until the Mac is back up. To pick up new commits automatically, put
+`./Scripts/manage.sh update` on a periodic `launchd`/cron schedule of your
+own — it's a safe no-op when there's nothing new.
 
 ## Known limitations (tested with synthetic TTS audio, not real recordings)
 
