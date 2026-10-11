@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.kriakiku.speakr-asr-wrapper</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Replace with your checkout path if different. -->
+        <string>/Users/kriakiku/Developer/speakr-asr-wrapper/.build/release/SpeakrASRWrapper</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOST</key>
+        <string>0.0.0.0</string>
+        <key>PORT</key>
+        <string>9099</string>
+        <key>PARAKEET_VERSION</key>
+        <string>v3</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/speakr-asr-wrapper.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/speakr-asr-wrapper.err.log</string>
+</dict>
+</plist>
