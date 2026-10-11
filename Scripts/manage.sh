@@ -98,10 +98,17 @@ cmd_status() {
     else
         log "launchd: not loaded"
     fi
-    if curl -s -m 3 -o /dev/null -w "health: HTTP %{http_code}\n" "http://localhost:$PORT/health"; then
-        :
+    # Right after (re)start the process is up but still reloading models,
+    # so give it a few seconds before calling the port truly unreachable.
+    for _ in 1 2 3 4 5; do
+        code="$(curl -s -m 3 -o /dev/null -w '%{http_code}' "http://localhost:$PORT/health" || echo 000)"
+        [ "$code" = "200" ] && break
+        sleep 2
+    done
+    if [ "$code" = "200" ]; then
+        log "health: HTTP $code"
     else
-        log "health: unreachable on port $PORT"
+        log "health: unreachable on port $PORT (HTTP $code)"
     fi
 }
 
