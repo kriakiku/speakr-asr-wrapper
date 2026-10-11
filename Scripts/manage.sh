@@ -38,8 +38,11 @@ cmd_install() {
     if is_loaded; then
         log "Already loaded, rebootstrapping..."
         launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+        # launchd can return a transient "Input/output error" on bootstrap
+        # if it's called immediately after bootout for the same label.
+        sleep 2
     fi
-    launchctl bootstrap "$DOMAIN" "$PLIST_DEST"
+    launchctl bootstrap "$DOMAIN" "$PLIST_DEST" || { sleep 2; launchctl bootstrap "$DOMAIN" "$PLIST_DEST"; }
     launchctl enable "$DOMAIN/$LABEL"
     log "Installed and started."
     cmd_status
